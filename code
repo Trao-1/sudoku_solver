@@ -1,0 +1,187 @@
+/* A Backtracking program in Java to solve Sudoku problem */
+import java.util.Scanner;
+class sudoku
+{
+    public static boolean isSafe(int[][] B,
+                                 int row, int col,
+                                 int num)
+    {
+        // Row has the unique (row-clash)
+        for (int d = 0; d < B.length; d++)
+        {
+             
+            // Check if the number we are trying to place is already present in that row, return false;
+            if (B[row][d] == num) 
+            {
+                return false;
+            }
+        }
+ 
+        // Column has the unique numbers (column-clash)
+        for (int r = 0; r < B.length; r++)
+        {
+             
+            // Check if the number we are trying to place is already present in that column, return false;
+            if (B[r][col] == num)
+            {
+                return false;
+            }
+        }
+ 
+        // Corresponding square has unique number (box-clash)
+        int sqrt = (int)Math.sqrt(B.length);
+        int boxRowStart = row - row % sqrt;
+        int boxColStart = col - col % sqrt;
+ 
+        for (int r = boxRowStart;
+             r < boxRowStart + sqrt; r++)
+        {
+            for (int d = boxColStart;
+                 d < boxColStart + sqrt; d++)
+            {
+                if (B[r][d] == num)
+                {
+                    return false;
+                }
+            }
+        }
+ 
+        // if there is no clash, it's safe
+        return true;
+    }
+ 
+    public static boolean solveSudoku(int[][] board, int n)
+    {
+        int row = -1;
+        int col = -1;
+        boolean isEmpty = true;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (board[i][j] == 0)
+                {
+                    row = i;
+                    col = j;
+ 
+                    // We still have some remaining missing values in Sudoku
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if (!isEmpty) {
+                break;
+            }
+        }
+ 
+        // No empty space left
+        if (isEmpty)
+        {
+            return true;
+        }
+ 
+        // Else for each-row backtrack
+        for (int num = 1; num <= n; num++)
+        {
+            if (isSafe(board, row, col, num))
+            {
+                board[row][col] = num;
+                if (solveSudoku(board, n))
+                {
+                    // print(board, n);
+                    return true;
+                }
+                else
+                {
+                    // replace it
+                    board[row][col] = 0;
+                }
+            }
+        }
+        return false;
+    }
+ 
+    public static void print(
+        int[][] B, int Print)
+    {
+         
+        // The Grid is solved , now print it
+        for (int r = 0; r < Print; r++)
+        {
+            for (int d = 0; d < Print; d++)
+            {
+                System.out.print(B[r][d]);
+                System.out.print(" ");
+            }
+            System.out.print("\n");
+ 
+            if ((r + 1) % (int)Math.sqrt(Print) == 0)
+            {
+                System.out.print("");
+            }
+        }
+    }
+ 
+    public static void main(String args[])
+    {
+    	Scanner sc = new Scanner(System.in);
+    	System.out.println("=========|Solution Generator for a Given Sudoku Puzzle|=========\n");
+    	System.out.println(" **This code uses BACKTRACKING ALGORITHM**\n");
+    	while(true)
+    	{
+            System.out.println("\nMenu:");
+            System.out.println("1.Print the unsolved Sudoku Grid:");
+            System.out.println("2.Print the solved Sudoku Grid:");
+            System.out.println("3.System time taken(nano sec)");
+            System.out.println("4.Exit");
+            System.out.println();
+            System.out.println("Enter the choice in the menu");
+        int[][] B = new int[][] {
+            { 5, 3, 0, 0, 7, 0, 0, 0, 0 },
+            { 6, 0, 0, 1, 9, 5, 0, 0, 0 },
+            { 0, 9, 8, 0, 0, 0, 0, 6, 0 },
+            { 8, 0, 0, 0, 6, 0, 0, 0, 3 },
+            { 4, 0, 0, 8, 0, 3, 0, 0, 1 },
+            { 7, 0, 0, 0, 2, 0, 0, 0, 6 },
+            { 0, 6, 0, 0, 0, 0, 2, 8, 0 },
+            { 0, 0, 0, 4, 1, 9, 0, 0, 5 },
+            { 0, 0, 0, 0, 8, 0, 0, 7, 9 }
+        };
+        int Print = B.length;
+    	int ch = sc.nextInt();
+    	switch(ch)
+    	{
+    	case 1:
+    		System.out.println("The Unsolved Sudoku Grid:");
+        	System.out.println();
+        	print(B,Print);
+        	break;
+    	case 2: 
+    		System.out.println("The Solved Sudoku Grid:");
+        	System.out.println();
+ 
+        if (solveSudoku(B , Print))
+        {
+            // print solution
+            print(B , Print);
+        }
+        else {
+            System.out.println("Has no solution");
+        }
+        break;
+    	case 3:
+    		System.out.println("The Time compexity is : O(9^(n*n))");
+    		System.out.println("Time taken for execution");
+    		long start = System.nanoTime();
+    		solveSudoku(B,Print);
+    		long end = System.nanoTime();
+    		System.out.println((end-start));
+    		break;
+    	case 4:
+    		System.exit(0);break;
+    	default : 
+    		System.out.println("Invalid choice");
+     }
+    }
+  }
+}
